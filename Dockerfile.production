@@ -1,0 +1,38 @@
+FROM maven:3.8.6-openjdk-17 AS build
+
+# Copier tous les projets
+COPY eureka-server /app/eureka-server
+COPY api-gateway /app/api-gateway  
+COPY stagiaire-service /app/stagiaire-service
+COPY encadreur-service /app/encadreur-service
+
+# Compiler chaque service
+WORKDIR /app/eureka-server
+RUN mvn clean package -DskipTests
+
+WORKDIR /app/api-gateway
+RUN mvn clean package -DskipTests
+
+WORKDIR /app/stagiaire-service
+RUN mvn clean package -DskipTests
+
+WORKDIR /app/encadreur-service
+RUN mvn clean package -DskipTests
+
+# Image finale
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+
+# Copier les JAR compilés
+COPY --from=build /app/eureka-server/target/*.jar eureka-server.jar
+COPY --from=build /app/api-gateway/target/*.jar api-gateway.jar
+COPY --from=build /app/stagiaire-service/target/*.jar stagiaire-service.jar
+COPY --from=build /app/encadreur-service/target/*.jar encadreur-service.jar
+
+# Script de démarrage
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+EXPOSE 8762 9090 9091 9092
+
+CMD ["./start.sh"]
