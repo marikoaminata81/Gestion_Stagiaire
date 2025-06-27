@@ -1,7 +1,7 @@
 # Gestion des Stagiaires
 
-**Nom:** [Votre Nom]  
-**Prénom:** [Votre Prénom]
+**Nom:** MARIKO  
+**Prénom:** Aminata
 
 ## Description du Projet
 
